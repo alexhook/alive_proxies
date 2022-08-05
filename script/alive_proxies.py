@@ -71,19 +71,19 @@ def get_proxy_url(proxy: str, template: str, default_protocol: str = None) -> st
 
 
 def get_proxy_string(proxy: str, template: str) -> str:
-    for url_part in URL_PARTS:
-        template = template.replace(url_part, '{' + url_part + '}')
-
     prts = urlparse(proxy)
     prts = {
         'protocol': prts.scheme,
         'username': prts.username,
         'password': prts.password,
         'ip': prts.hostname,
-        'port': prts.port,
+        'port': str(prts.port),
     }
 
-    return template.format(**prts)
+    for template_prt, url_prt in prts.items():
+        template = template.replace(template_prt, url_prt)
+
+    return template
 
 
 async def check_proxy(proxy_url: str, checking_url: str, connection_timeout: int) -> tuple[str, float]:
